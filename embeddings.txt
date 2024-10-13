@@ -1,0 +1,3 @@
+nomic-embed-text
+mxbai-embed-text
+snowflake-artic-embed
