@@ -39,7 +39,7 @@ def chunk_splitter(text, chunk_size=100):
         word_count += 1
 
         if word_count >= chunk_size:
-            print(word_count)
+            #print(word_count)
             chunks.append(' '.join(current_chunk))
             current_chunk = []
             word_count = 0
@@ -58,10 +58,12 @@ def get_embedding(embedding_model, chunks):
 def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
 
+
     print("✨ Clearing Database")
     chroma_client.delete_collection(chroma_collection)
     print("Collection deleted successfully! ✅")
 
+    
     collection = chroma_client.get_or_create_collection(name=chroma_collection, metadata={"hnsw:space": "cosine"})
 
     metadatas = collection.get()['metadatas']
@@ -97,44 +99,46 @@ def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, qu
 
     docs = '\n\n'.join(results['documents'][0])
 
-    sources = f"{{{', '.join([f"{metadata['source']}: {metadata['chunk']}" for metadata in results['metadatas'][0]])}}}"
+    qualcosa = [f"{metadata['source']}: {metadata['chunk']}" for metadata in results['metadatas'][0]]
+    sources = f"{{{', '.join(qualcosa)}}}"
 
-    print(f"EMBEDDING: {embedding_model}")
 
     return docs, sources
 
 
 def do_query(query, docs, sources, ollama_address, ollama_port, model):
+    # Apriamo il file in modalità append in modo da non sovrascrivere ma aggiungere alla fine
+    with open("output.txt", "a", encoding="utf-8") as f:
 
-    print(f"MODEl: {model}")
+        # Scriviamo nel file invece di stampare a schermo
+        f.write(f"MODEl: {model}\n")
 
-    prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile: \n{docs}"
+        prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile: \n{docs}"
 
-    print(f"Domanda: {prompt}")
-    print("\n\n\n----------------------------------------\n\n\n")
-    print("Generazione in corso...")
-    print("\n\n\n----------------------------------------\n\n\n")
+        f.write(f"Domanda: {prompt}\n")
+        f.write("\n\n\n----------------------------------------\n\n\n")
+        f.write("Generazione in corso...\n")
+        f.write("\n\n\n----------------------------------------\n\n\n")
 
-    url = f"{ollama_address}:{ollama_port}/api/generate"
+        url = f"http://{ollama_address}:{ollama_port}/api/generate"
 
-    payload = json.dumps({
-        "model": model,
-        "prompt": prompt,
-        "stream": False
-    })
-    headers = {
-        'Content-Type': 'application/json'
-    }
+        payload = json.dumps({
+            "model": model,
+            "prompt": prompt,
+            "stream": False
+        })
+        headers = {
+            'Content-Type': 'application/json'
+        }
 
-    response = requests.request("POST", url, headers=headers, data=payload).json().get('response', 'Che dici')
+        response = requests.request("POST", url, headers=headers, data=payload).json().get('response', 'Che dici')
 
-    formatted_response = f"Response: {response}\n\nSources: {sources}"
-    print(formatted_response)
-    print("\n\n\n----------------------------------------\n\n\n")
+        formatted_response = f"Response: {response}\n\nSources: {sources}\n"
+        f.write(formatted_response)
+        f.write("\n\n\n----------------------------------------\n\n\n")
 
 
-def pipeline(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, query, ollama_address, ollama_port, model):
-    populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model)
+def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model):
     docs, sources = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query)
     do_query(query, docs, sources, ollama_address, ollama_port, model)
   

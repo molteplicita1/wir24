@@ -1,5 +1,4 @@
 llama3.1:8b
 gemma2:2b
-gemma2:9b
 mistral
 phi3.5
