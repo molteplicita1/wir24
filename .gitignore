@@ -3,3 +3,4 @@
 config.json
 **pycache**
 chroma**
+output**
