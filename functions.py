@@ -1,11 +1,4 @@
-import os
-import fitz
-import ollama
-import re
-import json
-import requests
-import chromadb
-
+import os, fitz, argparse, re, json, requests, chromadb
 
 def extract_text_from_pdf_files(path):
     text_contents = {}
@@ -86,20 +79,16 @@ def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
     return response.get("embeddings")
 
 
-
-
-  # embeds = ollama.embed(model=embedding_model, input=chunks)
-  # return embeds.get('embeddings', [])
-
-
 def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
 
-
-    # print("✨ Clearing Database")
-    # chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}")
-    # print(f"Collection ({chroma_collection}_{embedding_model}) deleted successfully! ✅")
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--reset", action="store_true", help="Reset the database.")
+    args = parser.parse_args()
+    if args.reset:
+        print("✨ Clearing Database")
+        chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}")
+        print("Collection deleted successfully! ✅")
     
     collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}", metadata={"hnsw:space": "cosine"})
 
