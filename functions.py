@@ -40,11 +40,26 @@ def chunk_splitter(text, chunk_size=256, overlap=32):
         word_count += 1
 
         if word_count >= chunk_size:
+            # Se il conteggio delle parole è maggiore o uguale alla dimensione del chunk desiderata (chunk_size),
+            # si procederà a creare un nuovo chunk.
+
+            # Aggiunge il chunk corrente (current_chunk) alla lista dei chunks.
+            # Il chunk è una lista di parole, quindi viene unita in una stringa usando ' '.join(),
+            # ovvero unisce le parole della lista in una singola stringa separata da spazi.
             chunks.append(' '.join(current_chunk))
 
+            # Prende le ultime "overlap" parole del chunk corrente (overlap è un numero predefinito),
+            # e le assegna a overlap_buffer. Questo viene fatto per creare una sovrapposizione tra i chunk
+            # (una sorta di continuità tra le sezioni di testo).
             overlap_buffer = current_chunk[-overlap:]
 
+            # Imposta current_chunk uguale a overlap_buffer. Questo resetta current_chunk,
+            # mantenendo solo le parole sovrapposte dall'ultimo chunk.
+            # In pratica, si prepara per iniziare un nuovo chunk, iniziando con le parole sovrapposte.
             current_chunk = overlap_buffer[:]
+
+            # Aggiorna il contatore di parole (word_count) con la lunghezza del nuovo current_chunk,
+            # che ora contiene solo le parole dell'overlap, in modo da prepararsi a riempirlo nuovamente.
             word_count = len(current_chunk)
 
 
@@ -54,18 +69,36 @@ def chunk_splitter(text, chunk_size=256, overlap=32):
     return chunks
 
 
-def get_embedding(embedding_model, chunks):
-  embeds = ollama.embed(model=embedding_model, input=chunks)
-  return embeds.get('embeddings', [])
+def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
+
+    # chiamata http
+    url = f"http://{ollama_address}:{ollama_port}/api/embed"
+    
+    payload = json.dumps({
+        "model": embedding_model,
+        "input": chunks,
+    })
+
+    headers={'Content-Type': 'application/json'}
+
+    response = requests.request("POST", url, headers = headers, data=payload).json()
+
+    return response.get("embeddings")
 
 
-def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model):
+
+
+  # embeds = ollama.embed(model=embedding_model, input=chunks)
+  # return embeds.get('embeddings', [])
+
+
+def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
 
 
-    print("✨ Clearing Database")
-    chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}")
-    print(f"Collection ({chroma_collection}_{embedding_model}) deleted successfully! ✅")
+    # print("✨ Clearing Database")
+    # chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}")
+    # print(f"Collection ({chroma_collection}_{embedding_model}) deleted successfully! ✅")
 
     
     collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}", metadata={"hnsw:space": "cosine"})
@@ -82,7 +115,7 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
             continue
 
         chunks = chunk_splitter(text)
-        embeds = get_embedding(embedding_model, chunks)
+        embeds = get_embedding(embedding_model, chunks, ollama_address, ollama_port)
         chunk_number = list(range(len(chunks)))
         ids = [file_name + str(index) for index in chunk_number]
         metadatas = [{"source": file_name, "chunk": index} for index in chunk_number]
@@ -92,12 +125,12 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
     print(f"Collection ({chroma_collection}_{embedding_model}) populated successfully! ✅")
 
 
-def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query):
+def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port):
 
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
     collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}")
 
-    query_embed = ollama.embed(model=embedding_model, input=query)['embeddings']
+    query_embed = get_embedding(embedding_model, [query], ollama_address, ollama_port)
 
     results = collection.query(query_embeddings=query_embed, n_results=5)
 
@@ -142,6 +175,6 @@ def do_query(query, docs, sources, ollama_address, ollama_port, model):
 
 
 def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model):
-    docs, sources = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query)
+    docs, sources = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port)
     do_query(query, docs, sources, ollama_address, ollama_port, model)
   
