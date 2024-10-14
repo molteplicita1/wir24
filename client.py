@@ -33,7 +33,7 @@ with open('queries.txt') as quer:
     queries = [q.strip("\n") for q in quer]
 
 for embedding_model in embeddings:
-    populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model)
+    populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port)
 
 print("\n\n")
 
