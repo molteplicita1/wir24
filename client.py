@@ -1,5 +1,7 @@
-import json
+import json, time
 from functions import populate, pipeline
+
+time_start = time.time()
 
 with open('config.json') as f:
     config = json.load(f)
@@ -20,13 +22,38 @@ with open('models.txt') as mod:
     models = [m.strip() for m in mod]
 
 
-query = "Parlami del clustering"
+with open('output.md', 'w') as out:
+    out.write("")
+    out.close()
 
+
+print("Output file cleared")
+
+with open('queries.txt') as quer:
+    queries = [q.strip("\n") for q in quer]
 
 for embedding_model in embeddings:
-    print(embedding_model)
     populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model)
-    for model in models:
-        for i in range(0, 2):
-            pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model)
 
+print("\n\n")
+
+with open('output.md', 'a') as f:
+    for query in queries:
+        print(f"Query: {query}")
+        f.write(f"# QUERY: {query}\n")
+        f.flush()
+        print("\n")
+        for embedding_model in embeddings:
+            for model in models:
+                print(f"Starting with {embedding_model} and {model}")
+                f.write(f"## EMBEDDING: {embedding_model}\n")
+                f.write(f"## MODEL: {model}\n")
+                f.flush()
+                pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model)
+                print(f"Done with {embedding_model} and {model}\n\n")
+                print("\n")
+    f.write("\n\n\n----------------------------------------\n\n\n")
+
+time_end = time.time()
+
+print(f"Total time: {time_end - time_start} seconds")

@@ -27,22 +27,26 @@ def extract_text_from_pdf_files(path):
     return text_contents
 
 
-def chunk_splitter(text, chunk_size=100):
+def chunk_splitter(text, chunk_size=256, overlap=32):
     words = re.findall(r'\S+', text)
 
     chunks = []
     current_chunk = []
     word_count = 0
+    overlap_buffer = []
 
     for word in words:
         current_chunk.append(word)
         word_count += 1
 
         if word_count >= chunk_size:
-            #print(word_count)
             chunks.append(' '.join(current_chunk))
-            current_chunk = []
-            word_count = 0
+
+            overlap_buffer = current_chunk[-overlap:]
+
+            current_chunk = overlap_buffer[:]
+            word_count = len(current_chunk)
+
 
     if current_chunk:
         chunks.append(' '.join(current_chunk))
@@ -60,11 +64,11 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
 
 
     print("✨ Clearing Database")
-    chroma_client.delete_collection(chroma_collection)
-    print("Collection deleted successfully! ✅")
+    chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}")
+    print(f"Collection ({chroma_collection}_{embedding_model}) deleted successfully! ✅")
 
     
-    collection = chroma_client.get_or_create_collection(name=chroma_collection, metadata={"hnsw:space": "cosine"})
+    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}", metadata={"hnsw:space": "cosine"})
 
     metadatas = collection.get()['metadatas']
     files = set(metadata['source'] for metadata in metadatas)
@@ -80,18 +84,18 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
         chunks = chunk_splitter(text)
         embeds = get_embedding(embedding_model, chunks)
         chunk_number = list(range(len(chunks)))
-        print(f"Populating {file_name} (chunks={chunk_number[-1]}) into the collection...")
         ids = [file_name + str(index) for index in chunk_number]
         metadatas = [{"source": file_name, "chunk": index} for index in chunk_number]
+        print(f"Adding {file_name} (chunks={chunk_number[-1]}) to the collection ({chroma_collection}_{embedding_model})...")
         collection.add(ids=ids, documents=chunks, embeddings=embeds, metadatas=metadatas)
 
-    print("Data populated successfully! ✅")
+    print(f"Collection ({chroma_collection}_{embedding_model}) populated successfully! ✅")
 
 
 def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query):
 
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
-    collection = chroma_client.get_or_create_collection(name=chroma_collection)
+    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}")
 
     query_embed = ollama.embed(model=embedding_model, input=query)['embeddings']
 
@@ -108,14 +112,13 @@ def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, qu
 
 def do_query(query, docs, sources, ollama_address, ollama_port, model):
     # Apriamo il file in modalità append in modo da non sovrascrivere ma aggiungere alla fine
-    with open("output.txt", "a", encoding="utf-8") as f:
+    with open("output.md", "a", encoding="utf-8") as f:
 
-        # Scriviamo nel file invece di stampare a schermo
-        f.write(f"MODEl: {model}\n")
+        f.write("\n")
 
-        prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile: \n{docs}"
+        prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile: \n\n{docs}"
 
-        f.write(f"Domanda: {prompt}\n")
+        f.write(f"### Question: \n{prompt}\n")
         f.write("\n\n\n----------------------------------------\n\n\n")
         f.write("Generazione in corso...\n")
         f.write("\n\n\n----------------------------------------\n\n\n")
@@ -133,7 +136,7 @@ def do_query(query, docs, sources, ollama_address, ollama_port, model):
 
         response = requests.request("POST", url, headers=headers, data=payload).json().get('response', 'Che dici')
 
-        formatted_response = f"Response: {response}\n\nSources: {sources}\n"
+        formatted_response = f"### Response: \n{response}\n\nSources: {sources}\n"
         f.write(formatted_response)
         f.write("\n\n\n----------------------------------------\n\n\n")
 
