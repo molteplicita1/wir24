@@ -1,3 +1,1 @@
 Che cosa sono i DevOps?
-Che cosa sono i RAID?
-Che cos'è il clustering?
