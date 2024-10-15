@@ -35,7 +35,7 @@ with open('queries.txt') as quer:
 for embedding_model in embeddings:
     populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port)
 
-print("\n\n")
+print("\n")
 
 with open('output.md', 'a') as f:
     for query in queries:
@@ -50,8 +50,7 @@ with open('output.md', 'a') as f:
                 f.write(f"## MODEL: {model}\n")
                 f.flush()
                 pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model)
-                print(f"Done with {embedding_model} and {model}\n\n")
-                print("\n")
+                print(f"Done with {embedding_model} and {model}\n")
     f.write("\n\n\n----------------------------------------\n\n\n")
 
 time_end = time.time()

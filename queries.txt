@@ -1,4 +1,1 @@
-Parlami dell'approccio agile dell'ingegneria del software
-Parlami del clustering
-Che cosa si intende con RAID?
-Quali sono i vantaggi del complemento a 2?
+Che cosa sono i DevOps?

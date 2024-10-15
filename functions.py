@@ -150,7 +150,10 @@ def do_query(query, docs, sources, ollama_address, ollama_port, model):
         payload = json.dumps({
             "model": model,
             "prompt": prompt,
-            "stream": False
+            "stream": False,
+            "options":{
+                "num_thread": 8
+            }
         })
         headers = {
             'Content-Type': 'application/json'
