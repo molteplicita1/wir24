@@ -137,7 +137,7 @@ def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, qu
     return docs, sources, distance
 
 
-def do_query(query, docs, sources, ollama_address, ollama_port, model):
+def do_query(query, docs, sources, distance, ollama_address, ollama_port, model):
     # Apriamo il file in modalità append in modo da non sovrascrivere ma aggiungere alla fine
     with open("output.md", "a", encoding="utf-8") as f:
 
@@ -166,12 +166,12 @@ def do_query(query, docs, sources, ollama_address, ollama_port, model):
 
         response = requests.request("POST", url, headers=headers, data=payload).json().get('response', 'Che dici')
 
-        formatted_response = f"### Response: \n{response}\n\nSources: {sources}\n"
+        formatted_response = f"### Response: \n{response}\n\nSources: {sources}\n\n Distance: {distance}\n"
         f.write(formatted_response)
         f.write("\n\n\n----------------------------------------\n\n\n")
 
 
-def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model, tokenizer):
-    docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, tokenizer)
-    do_query(query, docs, sources, ollama_address, ollama_port, model)
+def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model):
+    docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port)
+    do_query(query, docs, distance, sources, ollama_address, ollama_port, model)
   

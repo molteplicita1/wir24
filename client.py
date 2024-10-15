@@ -47,10 +47,9 @@ print("\n")
 with open('output.md', 'a') as f:
     for tokenizer in tokenizers:
         for query in queries:
-            print(f"Query: {query}")
+            print(f"\nQuery: {query}")
             f.write(f"# QUERY: {query}\n")
             f.flush()
-            print("\n")
             for embedding_model in embeddings:
                 for model in models:
                     print(f"Starting with {embedding_model}, {model} and {type(tokenizer).__name__}")
@@ -58,7 +57,7 @@ with open('output.md', 'a') as f:
                     f.write(f"## MODEL: {model}\n")
                     f.write(f"## TOKENIZER: {type(tokenizer).__name__}\n")
                     f.flush()
-                    pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model, tokenizer)
+                    pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model)
                     print(f"Done with {embedding_model}, {model} and {type(tokenizer).__name__}\n")
         f.write("\n\n\n----------------------------------------\n\n\n")
 
