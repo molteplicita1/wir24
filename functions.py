@@ -20,19 +20,18 @@ def extract_text_from_pdf_files(path):
     return text_contents
 
 
-def chunk_splitter(text, chunk_size=256, overlap=32):
-    words = re.findall(r'\S+', text)
-
+def chunk_splitter(tokens, chunk_size=256, overlap=32):
+    
     chunks = []
     current_chunk = []
-    word_count = 0
+    token_count = 0
     overlap_buffer = []
 
-    for word in words:
-        current_chunk.append(word)
-        word_count += 1
+    for token in tokens:
+        current_chunk.append(token)
+        token_count += 1
 
-        if word_count >= chunk_size:
+        if token_count >= chunk_size:
             # Se il conteggio delle parole è maggiore o uguale alla dimensione del chunk desiderata (chunk_size),
             # si procederà a creare un nuovo chunk.
 
@@ -53,7 +52,7 @@ def chunk_splitter(text, chunk_size=256, overlap=32):
 
             # Aggiorna il contatore di parole (word_count) con la lunghezza del nuovo current_chunk,
             # che ora contiene solo le parole dell'overlap, in modo da prepararsi a riempirlo nuovamente.
-            word_count = len(current_chunk)
+            token_count = len(current_chunk)
 
 
     if current_chunk:
@@ -70,6 +69,9 @@ def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
     payload = json.dumps({
         "model": embedding_model,
         "input": chunks,
+        "options": {
+            "num_thread": 8
+        }
     })
 
     headers={'Content-Type': 'application/json'}
@@ -79,7 +81,7 @@ def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
     return response.get("embeddings")
 
 
-def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port):
+def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port, tokenizer):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
 
     parser = argparse.ArgumentParser()
@@ -87,10 +89,10 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
     args = parser.parse_args()
     if args.reset:
         print("✨ Clearing Database")
-        chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}")
+        chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}_{type(tokenizer).__name__}")
         print("Collection deleted successfully! ✅")
     
-    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}", metadata={"hnsw:space": "cosine"})
+    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}_{type(tokenizer).__name__}", metadata={"hnsw:space": "cosine"})
 
     metadatas = collection.get()['metadatas']
     files = set(metadata['source'] for metadata in metadatas)
@@ -103,12 +105,13 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
             print(f"Skipping {file_name}, already in the collection.")
             continue
 
-        chunks = chunk_splitter(text)
+        tokens = tokenizer.tokenize(text)
+        chunks = chunk_splitter(tokens)
         embeds = get_embedding(embedding_model, chunks, ollama_address, ollama_port)
         chunk_number = list(range(len(chunks)))
         ids = [file_name + str(index) for index in chunk_number]
         metadatas = [{"source": file_name, "chunk": index} for index in chunk_number]
-        print(f"Adding {file_name} (chunks={chunk_number[-1]}) to the collection ({chroma_collection}_{embedding_model})...")
+        print(f"Adding {file_name} (chunks={chunk_number[-1]}) to the collection ({chroma_collection}_{embedding_model}_{type(tokenizer).__name__})...")
         collection.add(ids=ids, documents=chunks, embeddings=embeds, metadatas=metadatas)
 
     print(f"Collection ({chroma_collection}_{embedding_model}) populated successfully! ✅")
@@ -125,11 +128,13 @@ def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, qu
 
     docs = '\n\n'.join(results['documents'][0])
 
+    distance = results['distances'][0]
+
     qualcosa = [f"{metadata['source']}: {metadata['chunk']}" for metadata in results['metadatas'][0]]
     sources = f"{{{', '.join(qualcosa)}}}"
 
 
-    return docs, sources
+    return docs, sources, distance
 
 
 def do_query(query, docs, sources, ollama_address, ollama_port, model):
@@ -166,7 +171,7 @@ def do_query(query, docs, sources, ollama_address, ollama_port, model):
         f.write("\n\n\n----------------------------------------\n\n\n")
 
 
-def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model):
-    docs, sources = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port)
+def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model, tokenizer):
+    docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, tokenizer)
     do_query(query, docs, sources, ollama_address, ollama_port, model)
   
