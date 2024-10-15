@@ -1,7 +1,13 @@
 import json, time
 from functions import populate, pipeline
+from tokenizer import TokenizerFactory
 
 time_start = time.time()
+
+t1 = TokenizerFactory.create_tokenizer()
+t2 = TokenizerFactory.create_tokenizer(model="google/gemma-2-2b")
+
+tokenizers = [t1, t2]
 
 with open('config.json') as f:
     config = json.load(f)
@@ -33,25 +39,28 @@ with open('queries.txt') as quer:
     queries = [q.strip("\n") for q in quer]
 
 for embedding_model in embeddings:
-    populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port)
+    for tokenizer in tokenizers:
+        populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port, tokenizer)
 
 print("\n")
 
 with open('output.md', 'a') as f:
-    for query in queries:
-        print(f"Query: {query}")
-        f.write(f"# QUERY: {query}\n")
-        f.flush()
-        print("\n")
-        for embedding_model in embeddings:
-            for model in models:
-                print(f"Starting with {embedding_model} and {model}")
-                f.write(f"## EMBEDDING: {embedding_model}\n")
-                f.write(f"## MODEL: {model}\n")
-                f.flush()
-                pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model)
-                print(f"Done with {embedding_model} and {model}\n")
-    f.write("\n\n\n----------------------------------------\n\n\n")
+    for tokenizer in tokenizers:
+        for query in queries:
+            print(f"Query: {query}")
+            f.write(f"# QUERY: {query}\n")
+            f.flush()
+            print("\n")
+            for embedding_model in embeddings:
+                for model in models:
+                    print(f"Starting with {embedding_model}, {model} and {type(tokenizer).__name__}")
+                    f.write(f"## EMBEDDING: {embedding_model}\n")
+                    f.write(f"## MODEL: {model}\n")
+                    f.write(f"## TOKENIZER: {type(tokenizer).__name__}\n")
+                    f.flush()
+                    pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model, tokenizer)
+                    print(f"Done with {embedding_model}, {model} and {type(tokenizer).__name__}\n")
+        f.write("\n\n\n----------------------------------------\n\n\n")
 
 time_end = time.time()
 
