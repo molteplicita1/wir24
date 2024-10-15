@@ -173,5 +173,5 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
 
 def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model):
     docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port)
-    do_query(query, docs, distance, sources, ollama_address, ollama_port, model)
+    do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
   
