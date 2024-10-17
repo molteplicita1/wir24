@@ -81,18 +81,18 @@ def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
     return response.get("embeddings")
 
 
-def populate(chroma_address, chroma_port, chroma_collection, data_path, embedding_model, ollama_address, ollama_port, tokenizer):
+def populate(chroma_address, chroma_port, chroma_collection_name, data_path, embedding_model, ollama_address, ollama_port, tokenizer):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
 
-    parser = argparse.ArgumentParser()
+    """ parser = argparse.ArgumentParser()
     parser.add_argument("--reset", action="store_true", help="Reset the database.")
     args = parser.parse_args()
     if args.reset:
         print("✨ Clearing Database")
-        chroma_client.delete_collection(f"{chroma_collection}_{embedding_model}_{type(tokenizer).__name__}")
-        print("Collection deleted successfully! ✅")
+        chroma_client.delete_collection(f"{chroma_collection_name}")
+        print("Collection deleted successfully! ✅") """
     
-    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}_{type(tokenizer).__name__}", metadata={"hnsw:space": "cosine"})
+    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection_name}", metadata={"hnsw:space": "cosine"})
 
     metadatas = collection.get()['metadatas']
     files = set(metadata['source'] for metadata in metadatas)
@@ -111,28 +111,26 @@ def populate(chroma_address, chroma_port, chroma_collection, data_path, embeddin
         chunk_number = list(range(len(chunks)))
         ids = [file_name + str(index) for index in chunk_number]
         metadatas = [{"source": file_name, "chunk": index} for index in chunk_number]
-        print(f"Adding {file_name} (chunks={chunk_number[-1]}) to the collection ({chroma_collection}_{embedding_model}_{type(tokenizer).__name__})...")
+        print(f"Adding {file_name} (chunks={chunk_number[-1]}) to the collection ({chroma_collection_name})...")
         collection.add(ids=ids, documents=chunks, embeddings=embeds, metadatas=metadatas)
 
-    print(f"Collection ({chroma_collection}_{embedding_model}) populated successfully! ✅")
+    print(f"Collection ({chroma_collection_name}) populated successfully! ✅")
 
 
-def retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port):
+def retrieve(chroma_address, chroma_port, chroma_collection_name, embedding_model, query, ollama_address, ollama_port):
 
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
-    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection}_{embedding_model}")
+    collection = chroma_client.get_or_create_collection(name=f"{chroma_collection_name}")
 
     query_embed = get_embedding(embedding_model, [query], ollama_address, ollama_port)
 
-    results = collection.query(query_embeddings=query_embed, n_results=5)
+    results = collection.query(query_embeddings=query_embed, n_results=3)
 
     docs = '\n\n'.join(results['documents'][0])
 
     distance = results['distances'][0]
 
-    qualcosa = [f"{metadata['source']}: {metadata['chunk']}" for metadata in results['metadatas'][0]]
-    sources = f"{{{', '.join(qualcosa)}}}"
-
+    sources = f"{{{', '.join([f"{metadata['source']}: {metadata['chunk']}" for metadata in results['metadatas'][0]])}}}"
 
     return docs, sources, distance
 
@@ -143,7 +141,7 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
 
         f.write("\n")
 
-        prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile: \n\n{docs}"
+        prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile. \nNota bene: se nel contesto seguente ci sono degli esempi, non considerarli per fornire la spiegazione.\nIl contesto è:\n\n{docs}"
 
         f.write(f"### Question: \n{prompt}\n")
         f.write("\n\n\n----------------------------------------\n\n\n")
@@ -157,7 +155,8 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
             "prompt": prompt,
             "stream": False,
             "options":{
-                "num_thread": 8
+#                "num_thread": 8,
+                "temperature": 0.6
             }
         })
         headers = {
@@ -171,7 +170,7 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
         f.write("\n\n\n----------------------------------------\n\n\n")
 
 
-def pipeline(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port, model):
-    docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection, embedding_model, query, ollama_address, ollama_port)
+def pipeline(chroma_address, chroma_port, chroma_collection_name, embedding_model, query, ollama_address, ollama_port, model):
+    docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection_name, embedding_model, query, ollama_address, ollama_port)
     do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
   
