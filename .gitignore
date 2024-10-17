@@ -1,6 +1,6 @@
 .DS_Store
 .venv**
-config.json
+.env**
 **pycache**
 chroma**
 output**
