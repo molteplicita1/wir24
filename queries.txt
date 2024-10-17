@@ -1,3 +1,3 @@
-Che cosa sono i DevOps?
-Che cosa sono i RAID?
-Che cos'è il clustering?
+Parlami dei DevOps nell'ambito dell'ingegneria del software.
+Parlami della tecnologia RAID per quanto riguarda i sistemi di archiviazione dei computer.
+Parlami del clustering che abbiamo studiato in Data Analytics.
