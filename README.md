@@ -8,13 +8,13 @@ The system allows users to perform queries over the collection of notes using di
 
 -  **client.py**: Executes a single query over the course notes using the model specified in the `.env` file. The result is saved in an `output.md` file, which contains:
 
-  - The query,
+	  - The query,
+	
+	  - The retrieved documents,
+	
+	  - The model's response.
 
-  - The retrieved documents,
-
-  - The model's response.
-
-  The query must be specified directly within the `client.py` file before running the script.
+  	The query must be specified directly within the `client.py` file before running the script.
 
 -  **pipe.py**: Compares various models, tokenizers, and embeddings by processing multiple queries. The results are stored in an `output.md` file, which includes:
 
@@ -53,9 +53,9 @@ The system allows users to perform queries over the collection of notes using di
 
 -  **queries.txt**: A list of sample queries to be used for retrieval tests.
 
--  **embeddings.txt**: Placeholder file containing embeddings information.
+-  **embeddings.txt**: A list of embeddings.
 
--  **models.txt**: Placeholder for information about the models used in the retrieval process.
+-  **models.txt**: A list of models.
 
 -  **requirements.txt**: Lists the Python dependencies required to run the project.
 
