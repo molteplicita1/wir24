@@ -92,10 +92,28 @@ The system allows users to perform queries over the collection of notes using di
 
 	The results will be saved in the output.md file, detailing the model, embedding, tokenizer, query, retrieved documents, and model's response.
 
+4. **Configure the .env file**:
+   
+   	Create a .env file in the root of the project with the following parameters to specify the server settings and model configurations:
+
+	```
+ 	EMBEDDING_MODEL=sample-embed-model
+	TOKENIZER=sample-tokenizer
+	CHROMA_PATH=chroma-db-path
+	CHROMA_ADDRESS=localhost
+	CHROMA_PORT=8080
+	CHROMA_DB=sample-db
+	DATA_PATH=sample-data-path
+	MODEL=sample-model:1b
+	OLLAMA_ADDRESS=127.0.0.1
+	OLLAMA_PORT=12345
+ 	```
 ## Description
 
-This project integrates document retrieval and query processing.
-
-It extracts text from course notes (PDF files), processes the text into chunks, and then uses machine learning models to answer queries.
+This project integrates document retrieval and query processing. It extracts text from course notes (PDF files), processes the text into chunks, and then uses machine learning models to answer queries. 
 
 Tokenization can be handled by either a simple regex-based approach or a more sophisticated method using pre-trained models.
+
+Additionally, the system requires HTTP calls to an Ollama server that runs the LLMs. 
+
+The server's address must be specified in the ```.env``` file under the ```OLLAMA_ADDRESS``` and ```OLLAMA_PORT``` fields for the system to function correctly.
