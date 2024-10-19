@@ -3,67 +3,110 @@
 This project is a Retrieval-Augmented Generation (RAG) system designed to retrieve and process course notes from the undergraduate Computer Engineering program. 
 The system allows users to perform queries over the collection of notes using different models and strategies.
 
+## Description
+
+The system integrates document retrieval and query processing. It extracts text from course notes (PDF files), processes the text into chunks, stores it in a vector database and then uses LLM models to answer queries.
+
+Tokenization can be handled by either a simple regex-based approach or a more sophisticated method using pre-trained models.
+
+Additionally, the system requires HTTP calls to an Ollama server that runs the LLMs. The server's address must be specified in the ```.env``` file under the ```OLLAMA_ADDRESS``` and ```OLLAMA_PORT``` fields for the system to function correctly.
+
 
 ## Project Structure  
 
--  **client.py**: Executes a single query over the course notes using the model specified in the `.env` file. The result is saved in an `output.md` file, which contains:
+-  **client.py**: executes a single query over the course notes using the model specified in the `.env` file. The result is saved in an `output.md` file, which contains:
 
-  - The query,
+	  - the query
+	
+	  - the retrieved documents
+	
+	  - the model's response
 
-  - The retrieved documents,
+  	The query must be specified directly within the `client.py` file before running the script.
 
-  - The model's response.
+-  **pipe.py**: compares various models, tokenizers, and embeddings by processing multiple queries. The results are stored in an `output.md` file, which includes:
 
-  The query must be specified directly within the `client.py` file before running the script.
+	- the model used
 
--  **pipe.py**: Compares various models, tokenizers, and embeddings by processing multiple queries. The results are stored in an `output.md` file, which includes:
+	- the embedding technique
 
-	- The model used,
+	- the tokenizer used
 
-	- The embedding technique,
+	- the query
 
-	- The tokenizer used,
+	- the retrieved documents
 
-	- The query,
-
-	- The retrieved documents,
-
-	- The model's response.
-
-  
-
--  **functions.py**: Contains utility functions such as:
-
-	-  `extract_text_from_pdf_files()`: Extracts text content from PDFs located in a specified directory.
-
-	-  `chunk_splitter()`: Splits the text into chunks to improve tokenization and model processing.
-
-	-  `pipeline()`: Executes the retrieval and query processing pipeline using the provided model and query.
+	- the model's response
 
   
 
--  **tokenizer.py**: Defines strategies for text tokenization:
+-  **functions.py**: contains utility functions such as:
 
-	-  `SimpleTokenizer`: Tokenizes text using a basic regex-based approach.
+	-  `extract_text_from_pdf_files()`: extracts text content from PDFs located in a specified directory
 
-	-  `PretrainedTokenizer`: Tokenizes text using a pre-trained model from the Hugging Face `transformers` library.
+	-  `chunk_splitter()`: splits the text into chunks to improve tokenization and model processing
 
-	-  `TokenizerFactory`: A factory class for creating tokenizer objects, with or without a pre-trained model.
+	-  `pipeline()`: executes the retrieval and query processing pipeline using the provided model and query
+
+  
+
+-  **tokenizer.py**: defines strategies for text tokenization:
+
+	-  `SimpleTokenizer`: tokenizes text using a basic regex-based approach
+
+	-  `PretrainedTokenizer`: tokenizes text using a pre-trained model from the Hugging Face `transformers` library
+
+	-  `TokenizerFactory`: a factory class for creating tokenizer objects, with or without a pre-trained model
 
 
--  **queries.txt**: A list of sample queries to be used for retrieval tests.
+-  **queries.txt**: a list of sample queries to be used for retrieval tests
 
--  **embeddings.txt**: Placeholder file containing embeddings information.
+-  **embeddings.txt**: a list of embeddings
 
--  **models.txt**: Placeholder for information about the models used in the retrieval process.
+-  **models.txt**: a list of models
 
--  **requirements.txt**: Lists the Python dependencies required to run the project.
+-  **requirements.txt**: lists the Python dependencies required to run the project
 
   
 
 ## How to Run
 
-1.  **Install dependencies**:
+1. **Install Ollama**
+	
+	Download and install Ollama from [here](https://ollama.com/download).
+
+	After the installation, follow this [guide](https://github.com/ollama/ollama/blob/main/docs/faq.md#how-do-i-configure-ollama-server
+) to expose the Ollama server to the local network 
+2. **Install Chroma with Docker**
+	
+	Run the following command to install ChromaDB:
+
+	```
+	docker run -d -p 8000:8000 -v chroma-data:/chromadb/data -e ALLOW_RESET=TRUE --name chroma chromadb/chroma
+	```
+
+3. **Configure the .env file**
+   
+   	Create a ```.env``` file in the root of the project with the following parameters to specify the server settings and model configurations:
+
+	```
+ 	EMBEDDING_MODEL=sample-embed-model
+	TOKENIZER=sample-tokenizer
+	CHROMA_PATH=chroma-db-path
+	CHROMA_ADDRESS=localhost
+	CHROMA_PORT=8000
+	CHROMA_DB=sample-db
+	DATA_PATH=sample-data-path
+	MODEL=sample-model
+	OLLAMA_ADDRESS=127.0.0.1
+	OLLAMA_PORT=11434
+ 	```
+
+4.	**Add documents**
+
+	Create a ```data``` directory and add the PDF documents which wants include in the retrieve system 
+
+5.  **Install dependencies**
 
 	Run the following command to install all required Python libraries:
 
@@ -71,7 +114,7 @@ The system allows users to perform queries over the collection of notes using di
 	pip install -r requirements.txt
 	```
 
-2.  **Execute a single query**:
+6.  **Execute a single query**
 
 	Update the client.py file with the desired query, then run:
 
@@ -81,21 +124,22 @@ The system allows users to perform queries over the collection of notes using di
 
 	The result will be saved in the output.md file, which will include the query, the retrieved documents, and the model's response.
 
-3.  **Compare multiple models**:
+    To reset the database, run the following command:
+
+    ```
+	python client.py --reset
+	```
+
+7.  **Compare multiple models**:
 
 	Use the pipe.py script to compare different models, embeddings, and tokenizers. 		
-  Update the script with the models and techniques you want to test, then run:
+    Update the ```.txt``` files with the models, techniques and queries you want to test, then run:
 
 	```
-	python pipe.py
+	python pipe.py --reset
 	```
 
 	The results will be saved in the output.md file, detailing the model, embedding, tokenizer, query, retrieved documents, and model's response.
 
-## Description
 
-This project integrates document retrieval and query processing.
 
-It extracts text from course notes (PDF files), processes the text into chunks, and then uses machine learning models to answer queries.
-
-Tokenization can be handled by either a simple regex-based approach or a more sophisticated method using pre-trained models.
