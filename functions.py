@@ -1,4 +1,4 @@
-import os, fitz, argparse, re, json, requests, chromadb
+import os, fitz, json, requests, chromadb
 
 def extract_text_from_pdf_files(path):
     text_contents = {}
@@ -83,14 +83,6 @@ def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
 
 def populate(chroma_address, chroma_port, chroma_collection_name, data_path, embedding_model, ollama_address, ollama_port, tokenizer):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
-
-    """ parser = argparse.ArgumentParser()
-    parser.add_argument("--reset", action="store_true", help="Reset the database.")
-    args = parser.parse_args()
-    if args.reset:
-        print("✨ Clearing Database")
-        chroma_client.delete_collection(f"{chroma_collection_name}")
-        print("Collection deleted successfully! ✅") """
     
     collection = chroma_client.get_or_create_collection(name=f"{chroma_collection_name}", metadata={"hnsw:space": "cosine"})
 
@@ -130,7 +122,8 @@ def retrieve(chroma_address, chroma_port, chroma_collection_name, embedding_mode
 
     distance = results['distances'][0]
 
-    sources = f"{{{', '.join([f"{metadata['source']}: {metadata['chunk']}" for metadata in results['metadatas'][0]])}}}"
+    something = [f"{metadata['source']}: {metadata['chunk']}" for metadata in results["metadatas"][0]]
+    sources = f"{{{', '.join(something)}}}"
 
     return docs, sources, distance
 

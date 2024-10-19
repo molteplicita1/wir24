@@ -1,6 +1,6 @@
 from tokenizer import TokenizerFactory
 from functions import *
-import os
+import os, argparse
 
 
 with open('output.md', 'w') as f:
