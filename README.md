@@ -23,6 +23,7 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 	  - the model's response
 
   	The query must be specified directly within the `client.py` file before running the script.
+  	The query must be specified directly within the `client.py` file before running the script.
 
 -  **pipe.py**: compares various models, tokenizers, and embeddings by processing multiple queries. The results are stored in an `output.md` file, which includes:
 
