@@ -1,3 +1,17 @@
 Parlami dei DevOps nell'ambito dell'ingegneria del software.
-Parlami della tecnologia RAID per quanto riguarda i sistemi di archiviazione dei computer.
-Parlami del clustering che abbiamo studiato in Data Analytics.
+Che cos'è un'applicazione multi tenant?
+Spiegami il design pattern flyweight.
+Quali sono le differenze tra i desing pattern "flyweight" e "singleton"?
+Quali sono i vantaggi del complemento a 2?
+Cosa fa e quando viene utilizzato il TLB?
+Spiegami la gerarchia della memoria.
+Qual è la differenza tra write throught e write back nelle cache?
+Quando viene utilizzato il clustering e quali sono i tipi di cluster più famosi?
+Spiegami la differenza tra apprendimento supervisionato (supervised) e non supervisionato (unsupervised)
+Quando un dato è definito "open"?
+Che cos'è il binning e quante tipologie esistono?
+Che cos'è una random forest?
+Spiegami la differenza tra i modelli Decoder e Encoder.
+Cosa si intende con "neurone" nell'ambito delle reti neurali?
+Perché è conveniente utilizzare come funzione di attivazione una funzione ReLU?
+Parlami della venere di Botticelli.

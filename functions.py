@@ -134,7 +134,7 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
 
         f.write("\n")
 
-        prompt = f"{query} - Rispondi alla domanda in italiano basandoti esclusivamente sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile. \nNota bene: se nel contesto seguente ci sono degli esempi, non considerarli per fornire la spiegazione.\nIl contesto è:\n\n{docs}"
+        prompt = f"{query} - Rispondi alla domanda in italiano basandoti ESCLUSIVAMENTE sui seguenti documenti relativi ad appunti universitari di ingegneria informatica. \nLa risposta deve essere completa, accurata e fornire dettagli rilevanti in relazione al contesto disponibile. \nNota bene: se nel contesto seguente ci sono degli esempi, non considerarli per fornire la spiegazione.\nIl contesto è:\n\n{docs}"
 
         f.write(f"### Question: \n{prompt}\n")
         f.write("\n\n\n----------------------------------------\n\n\n")
@@ -149,7 +149,7 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
             "stream": False,
             "options":{
 #                "num_thread": 8,
-                "temperature": 0.6
+                "temperature": 0.1
             }
         })
         headers = {
