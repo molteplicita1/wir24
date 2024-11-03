@@ -143,6 +143,7 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 	The results will be saved in the output.md file, detailing the model, embedding, tokenizer, query, retrieved documents, and model's response.
 
 8. **Compare multiple temperatures**:
+   
    Use the pipe_queries.py script to compare various temperature settings on a single model.
 Update the list of temperatures in the file, then run:
    ```
