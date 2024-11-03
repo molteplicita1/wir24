@@ -25,7 +25,7 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
   	The query must be specified directly within the `client.py` file before running the script.
   	The query must be specified directly within the `client.py` file before running the script.
 
--  **pipe.py**: compares various models, tokenizers, and embeddings by processing multiple queries. The results are stored in an `output.md` file, which includes:
+-  **pipe_models.py**: compares various models, tokenizers, and embeddings by processing multiple queries. The results are stored in an `output.md` file, which includes:
 
 	- the model used
 
@@ -133,11 +133,11 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 
 7.  **Compare multiple models**:
 
-	Use the pipe.py script to compare different models, embeddings, and tokenizers. 		
+	Use the pipe_models.py script to compare different models, embeddings, and tokenizers. 		
     Update the ```.txt``` files with the models, techniques and queries you want to test, then run:
 
 	```
-	python pipe.py --reset
+	python pipe_models.py --reset
 	```
 
 	The results will be saved in the output.md file, detailing the model, embedding, tokenizer, query, retrieved documents, and model's response.
