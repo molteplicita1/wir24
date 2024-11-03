@@ -128,9 +128,9 @@ def retrieve(chroma_address, chroma_port, chroma_collection_name, embedding_mode
     return docs, sources, distance
 
 
-def do_query(query, docs, sources, distance, ollama_address, ollama_port, model):
+def do_query(query, docs, sources, distance, ollama_address, ollama_port, model, temperature=0.8):
     # Apriamo il file in modalità append in modo da non sovrascrivere ma aggiungere alla fine
-    with open("output.md", "a", encoding="utf-8") as f:
+    with open(f"output_{temperature}.md", "a", encoding="utf-8") as f:
 
         f.write("\n")
 
@@ -148,8 +148,8 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
             "prompt": prompt,
             "stream": False,
             "options":{
-#                "num_thread": 8,
-                "temperature": 0.1
+                "num_thread": 8,
+                "temperature": temperature
             }
         })
         headers = {
@@ -163,7 +163,7 @@ def do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
         f.write("\n\n\n----------------------------------------\n\n\n")
 
 
-def pipeline(chroma_address, chroma_port, chroma_collection_name, embedding_model, query, ollama_address, ollama_port, model):
+def pipeline(chroma_address, chroma_port, chroma_collection_name, embedding_model, query, ollama_address, ollama_port, model, temperature=0.8):
     docs, sources, distance = retrieve(chroma_address, chroma_port, chroma_collection_name, embedding_model, query, ollama_address, ollama_port)
-    do_query(query, docs, sources, distance, ollama_address, ollama_port, model)
+    do_query(query, docs, sources, distance, ollama_address, ollama_port, model, temperature)
   
