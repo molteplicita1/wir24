@@ -149,7 +149,7 @@ Update the list of temperatures in the file, then run:
    ```
 	python pipe_queries.py
    ```
-The results will be saved in separate files for each selected temperature, with each file named in the format ```output_{temperature}.md```.
+   The results will be saved in separate files for each selected temperature, with each file named in the format ```output_{temperature}.md```.
    
 
 
