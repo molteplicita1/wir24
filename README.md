@@ -83,7 +83,7 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 	Run the following command to install ChromaDB:
 
 	```
-	docker run -d -p 8000:8000 -v chroma-data:/chromadb/data -e ALLOW_RESET=TRUE --name chroma chromadb/chroma
+	docker run -d -p 8000:8000 -v chroma-data:/chromadb/data -e ALLOW_RESET=TRUE --name chroma chromadb/chroma:0.5.15
 	```
 
 3. **Configure the .env file**
@@ -93,7 +93,6 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 	```
  	EMBEDDING_MODEL=sample-embed-model
 	TOKENIZER=sample-tokenizer
-	CHROMA_PATH=chroma-db-path
 	CHROMA_ADDRESS=localhost
 	CHROMA_PORT=8000
 	CHROMA_DB=sample-db
@@ -101,6 +100,7 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 	MODEL=sample-model
 	OLLAMA_ADDRESS=127.0.0.1
 	OLLAMA_PORT=11434
+ 	TEMPERATURE=0.4
  	```
 
 4.	**Add documents**
@@ -142,5 +142,13 @@ Additionally, the system requires HTTP calls to an Ollama server that runs the L
 
 	The results will be saved in the output.md file, detailing the model, embedding, tokenizer, query, retrieved documents, and model's response.
 
+8. **Compare multiple temperatures**:
+   Use the pipe_queries.py script to compare various temperature settings on a single model.
+Update the list of temperatures in the file, then run:
+   ```
+	python pipe_queries.py
+   ```
+The results will be saved in separate files for each selected temperature, with each file named in the format ```output_{temperature}.md```.
+   
 
 
