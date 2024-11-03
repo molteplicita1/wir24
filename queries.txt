@@ -14,4 +14,5 @@ Che cos'è una random forest?
 Spiegami la differenza tra i modelli Decoder e Encoder.
 Cosa si intende con "neurone" nell'ambito delle reti neurali?
 Perché è conveniente utilizzare come funzione di attivazione una funzione ReLU?
-Parlami della venere di Botticelli.
+Parlami della Venere di Botticelli.
+Che ne pensi di Francesco Totti?
