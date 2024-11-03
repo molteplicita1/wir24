@@ -16,6 +16,7 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 MODEL = os.getenv("MODEL")
 OLLAMA_ADDRESS = os.getenv("OLLAMA_ADDRESS")
 OLLAMA_PORT = os.getenv("OLLAMA_PORT")
+TEMPERATURE = os.getenv("TEMPERATURE")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--reset", action="store_true", help="Reset the database.")
