@@ -11,7 +11,9 @@ class TokenizerStrategy:
 # Concrete Strategy 1: Tokenizzazione senza modello pre-addestrato
 class SimpleTokenizer(TokenizerStrategy):
     def tokenize(self, text):
-        text = re.sub(r'Lezione \d+ \d{2}/\d{2}/\d{4}', '', text)
+        text = re.sub(r'Lezione \d+', '', text)
+        text = re.sub(r'', '', text)
+        text = re.sub(r'\d{2}/\d{2}/\d{4}', '', text)
         return re.findall(r'\S+', text)
 
 
