@@ -80,6 +80,17 @@ def get_embedding(embedding_model, chunks, ollama_address, ollama_port):
 
     return response.get("embeddings")
 
+def delete_doc_in_collection(chroma_address, chroma_port, chroma_collection_name, doc):
+    chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)
+
+    collection = chroma_client.get_collection(name=f"{chroma_collection_name}")
+
+    metadatas = collection.get()['metadatas']
+    files = set(metadata['source'] for metadata in metadatas)
+
+    collection.delete(where={"source": doc})
+
+    print(f"Document {doc} deleted from the collection ({chroma_collection_name}) successfully! ✅")
 
 def populate(chroma_address, chroma_port, chroma_collection_name, data_path, embedding_model, ollama_address, ollama_port, tokenizer):
     chroma_client = chromadb.HttpClient(host=chroma_address, port=chroma_port)

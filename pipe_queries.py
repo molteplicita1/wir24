@@ -24,7 +24,7 @@ tokenizer = TokenizerFactory.create_tokenizer()
 print("Populating the database...")
 populate(CHROMA_ADDRESS, CHROMA_PORT, CHROMA_DB, DATA_PATH, EMBEDDING, OLLAMA_ADDRESS, OLLAMA_PORT, tokenizer)
 
-with open('queries.txt') as quer:
+with open('../queries.txt') as quer:
     queries = [q.strip("\n") for q in quer]
 
 temperatures = [0.1, 0.4, 0.6]

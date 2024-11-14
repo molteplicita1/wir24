@@ -24,11 +24,11 @@ gemma_tokenizer = TokenizerFactory.create_tokenizer(model=TOKENIZER)
 tokenizers = [simple_tokenizer, gemma_tokenizer]
 
 
-with open('embeddings.txt') as em:
+with open('../embeddings.txt') as em:
     embeddings = [e.strip() for e in em]
 
 
-with open('models.txt') as mod:
+with open('../models.txt') as mod:
     models = [m.strip() for m in mod]
 
 
@@ -39,7 +39,7 @@ with open('output.md', 'w') as out:
 
 print("Output file cleared")
 
-with open('queries.txt') as quer:
+with open('../queries.txt') as quer:
     queries = [q.strip("\n") for q in quer]
 
 
