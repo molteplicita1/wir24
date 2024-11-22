@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: generate
+  template:
+    metadata:
+      labels:
+        app: generate
+    spec:
+      containers:
+      - name: generate
+        image: docker.io/library/rag-generate:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8003
+        env:
+        - name: OLLAMA_ADDRESS
+          value: "host.minikube.internal"
+        - name: OLLAMA_PORT
+          value: "11434"
