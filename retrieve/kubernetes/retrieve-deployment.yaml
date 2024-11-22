@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retrieve
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retrieve
+  template:
+    metadata:
+      labels:
+        app: retrieve
+    spec:
+      containers:
+      - name: retrieve
+        image: docker.io/library/rag-retrieve:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8002
+        env:
+        - name: CHROMA_ADDRESS
+          value: "chroma"
+        - name: CHROMA_PORT
+          value: "8000"
+        - name: CHROMA_DB
+          value: "wir"
+        - name: EMBEDDING_MODEL
+          value: "nomic-embed-text"
+        - name: OLLAMA_ADDRESS
+          value: "host.minikube.internal"
+        - name: OLLAMA_PORT
+          value: "11434"

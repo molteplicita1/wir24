@@ -1,0 +1,3 @@
+fastapi[standard]
+requests
+chromadb==0.5.13
