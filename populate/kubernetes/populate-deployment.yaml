@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: populate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: populate
+  template:
+    metadata:
+      labels:
+        app: populate
+    spec:
+      containers:
+      - name: populate
+        image: docker.io/library/rag-populate:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8001
+        env:
+        - name: CHROMA_ADDRESS
+          value: "chroma"
+        - name: CHROMA_PORT
+          value: "8000"
+        - name: CHROMA_DB
+          value: "wir"
+        - name: EMBEDDING_MODEL
+          value: "nomic-embed-text"
+        - name: OLLAMA_ADDRESS
+          value: "host.minikube.internal"
+        - name: OLLAMA_PORT
+          value: "11434"
