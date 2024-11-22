@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: docker.io/library/rag-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8004
+        env:
+        - name: URL_POPULATE
+          value: "http://populate:8001/populate"
+        - name: URL_RETRIEVE
+          value: "http://retrieve:8002/retrieve"
+        - name: URL_GENERATE
+          value: "http://generate:8003/generate"
