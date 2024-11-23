@@ -1,6 +1,6 @@
 # Description
 
-This version of the system implements a microservices architecture, designed for enhanced scalability, modularity, and ease of maintenance. 
+This version of the project implements a microservices architecture, designed for enhanced scalability, modularity, and ease of maintenance. 
 The functionality is divided into four key microservices, each with a specific role:
 
 - **Gateway:** Acts as the central entry point, receiving and routing all incoming requests to the appropriate microservices.
