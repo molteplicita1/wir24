@@ -18,8 +18,8 @@ The functionality is divided into four key microservices, each with a specific r
 	After the installation, follow this [guide](https://github.com/ollama/ollama/blob/main/docs/faq.md#how-do-i-configure-ollama-server) to expose the Ollama server to the local network
 	
 
-3. **Clone the repository** and navigate to the project directory
-4. **Configure the .env file**:
+2. **Clone the repository** and navigate to the project directory
+3. **Configure the .env file**:
    	Create a ```.env``` file in the root of the project with the following parameters to specify the server settings and model configurations:
 
 	```
@@ -34,13 +34,24 @@ The functionality is divided into four key microservices, each with a specific r
 	URL_RETRIEVE=http://retrieve:8002/retrieve
 	URL_GENERATE=http://generate:8003/generate
  	```
-6. Make the ```compose.sh``` script executable:
+4. **Download model for ollama**:
+	```
+	ollama pull gemma2:2b
+ 	```
+
+	```
+	ollama pull sample-embed-model
+ 	```
+ 
+
+5. Make the ```compose.sh``` script executable:
 	  ```
 	  chmod 744 compose.sh
 	  ```
-7. **Execute** the compose.sh script	
+6. **Execute** the compose.sh script	
 	   ```
 	   ./compose.sh
 	   ```
+
    The compose.sh script will orchestrate the setup and startup of all microservices, ensuring the system is ready to handle requests.
 
