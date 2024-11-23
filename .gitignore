@@ -1,7 +1,7 @@
-**env**
-**venv**
-**http**
-**.idea**
-**data**
-**.DS_Store**
-**__pycache__**
+.DS_Store
+.venv**
+.env**
+**pycache**
+chroma**
+output**
+prova**
