@@ -98,7 +98,8 @@ curl --location 'http://127.0.0.1:8004/documents'
 ## POST  
 ### Uploading a document to the database  
 Endpoint: `http://127.0.0.1:8004/document`  
-You need to include a PDF document in the request body. In Postman, select the "form-data" body type, add a key named `file`, set its type to "File" (default is "Text"), and upload the PDF document.  
+You need to include a PDF document in the request body. 
+In Postman, select the "form-data" body type, add a key named `file`, set its type to "File" (default is "Text"), and upload the PDF document.  
 Example request using curl:  
 ```shell
 curl --location 'http://127.0.0.1:8004/document' --form 'file=@"path/to/file.pdf"'
@@ -106,7 +107,8 @@ curl --location 'http://127.0.0.1:8004/document' --form 'file=@"path/to/file.pdf
 
 ### Query for generation  
 Endpoint: `http://127.0.0.1:8004/query`  
-Include the query in the request body. In Postman, select the "raw" body type and provide the query in JSON format. Example:  
+Include the query in the request body. 
+In Postman, select the "raw" body type and provide the query in JSON format. Example:  
 ```json
 {
     "query": "Parlami del pattern singleton"
