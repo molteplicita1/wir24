@@ -16,10 +16,30 @@ The functionality is divided into four key microservices, each with a specific r
 	Download and install Ollama from [here](https://ollama.com/download).
 
 	After the installation, follow this [guide](https://github.com/ollama/ollama/blob/main/docs/faq.md#how-do-i-configure-ollama-server) to expose the Ollama server to the local network
+	
 
-2. **Clone the repository** and navigate to the project directory
-3. Make the ```compose.sh``` script executable:
+3. **Clone the repository** and navigate to the project directory
+4. **Configure the .env file**:
+   	Create a ```.env``` file in the root of the project with the following parameters to specify the server settings and model configurations:
+
+	```
+ 	EMBEDDING_MODEL=sample-embed-model
+	CHROMA_ADDRESS=localhost
+	CHROMA_PORT=8000
+	CHROMA_DB=sample-db
+	OLLAMA_ADDRESS=127.0.0.1
+	OLLAMA_PORT=11434
+ 	TEMPERATURE=0.4
+ 	URL_POPULATE=http://populate:8001/populate
+	URL_RETRIEVE=http://retrieve:8002/retrieve
+	URL_GENERATE=http://generate:8003/generate
+ 	```
+6. Make the ```compose.sh``` script executable:
 	  ```
 	  chmod 744 compose.sh
 	  ```
-5. 
+7. **Execute** the compose.sh script	
+	   ```
+	   ./compose.sh
+	   ```
+   The compose.sh script will orchestrate the setup and startup of all microservices, ensuring the system is ready to handle requests.
