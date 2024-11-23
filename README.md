@@ -34,7 +34,7 @@ The functionality is divided into four key microservices, each with a specific r
 	URL_RETRIEVE=http://retrieve:8002/retrieve
 	URL_GENERATE=http://generate:8003/generate
  	```
-4. **Download model for ollama**:
+4. **Download LLM & Embedding Model**:
 	```
 	ollama pull gemma2:2b
  	```
