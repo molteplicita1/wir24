@@ -7,6 +7,10 @@ docker images --format "{{.Repository}}:{{.Tag}}" | grep "rag-populate" | xargs 
 docker images --format "{{.Repository}}:{{.Tag}}" | grep "rag-retrieve" | xargs docker rmi
 docker images --format "{{.Repository}}:{{.Tag}}" | grep "chromadb/chroma" | xargs docker rmi
 
-docker compose up --build -d
+#docker compose up --build -d
 
+#docker compose logs -f
+
+docker compose build --no-cache
+docker compose up -d
 docker compose logs -f
