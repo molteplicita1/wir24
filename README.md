@@ -19,7 +19,7 @@ The functionality is divided into four key microservices, each with a specific r
 
 2. **Clone the repository** and navigate to the project directory
 3. Make the ```compose.sh``` script executable:
-  ```
-  chmod 744 compose.sh
-  ```
+	  ```
+	  chmod 744 compose.sh
+	  ```
 5. 
