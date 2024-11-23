@@ -24,10 +24,10 @@ The functionality is divided into four key microservices, each with a specific r
 
 	```
  	EMBEDDING_MODEL=sample-embed-model
-	CHROMA_ADDRESS=localhost
+	CHROMA_ADDRESS=chroma
 	CHROMA_PORT=8000
-	CHROMA_DB=sample-db
-	OLLAMA_ADDRESS=127.0.0.1
+	CHROMA_DB=wir
+	OLLAMA_ADDRESS=host.docker.internal
 	OLLAMA_PORT=11434
  	TEMPERATURE=0.4
  	URL_POPULATE=http://populate:8001/populate
@@ -43,3 +43,4 @@ The functionality is divided into four key microservices, each with a specific r
 	   ./compose.sh
 	   ```
    The compose.sh script will orchestrate the setup and startup of all microservices, ensuring the system is ready to handle requests.
+
