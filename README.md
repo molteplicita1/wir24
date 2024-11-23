@@ -55,3 +55,78 @@ The functionality is divided into four key microservices, each with a specific r
 
    The compose.sh script will orchestrate the setup and startup of all microservices, ensuring the system is ready to handle requests.
 
+
+# Warning  
+Before making requests that involve querying Chroma, you must first populate the database by uploading at least one PDF document. Refer to the section [Uploading a document to the database](#uploading-a-document-to-the-database) for instructions.
+
+The requests to **avoid** if no document has been uploaded yet are:  
+- [Query for generation](#query-for-generation)  
+- [Deleting a document from the database](#deleting-a-document-from-the-database)  
+- [Retrieving the list of uploaded documents](#retrieving-the-list-of-uploaded-documents)
+
+The requests that **can** be made regardless are:  
+- [Gateway health check](#gateway-health-check)  
+- [Health check for other services via the gateway](#health-check-for-other-services-via-the-gateway)  
+
+---
+
+# Requests  
+## GET  
+### Gateway health check  
+Endpoint: `http://127.0.0.1:8004`  
+Example request using curl:  
+```shell
+curl --location 'http://127.0.0.1:8004'
+```
+
+### Health check for other services via the gateway  
+Endpoint: `http://127.0.0.1:8004/services`  
+Example request using curl:  
+```shell
+curl --location 'http://127.0.0.1:8004/services'
+```
+
+### Retrieve the list of uploaded documents  
+Endpoint: `http://127.0.0.1:8004/documents`  
+Example request using curl:  
+```shell
+curl --location 'http://127.0.0.1:8004/documents'
+```
+
+---
+
+## POST  
+### Uploading a document to the database  
+Endpoint: `http://127.0.0.1:8004/document`  
+You need to include a PDF document in the request body. In Postman, select the "form-data" body type, add a key named `file`, set its type to "File" (default is "Text"), and upload the PDF document.  
+Example request using curl:  
+```shell
+curl --location 'http://127.0.0.1:8004/document' --form 'file=@"path/to/file.pdf"'
+```
+
+### Query for generation  
+Endpoint: `http://127.0.0.1:8004/query`  
+Include the query in the request body. In Postman, select the "raw" body type and provide the query in JSON format. Example:  
+```json
+{
+    "query": "Parlami del pattern singleton"
+}
+```
+Example request using curl:  
+```shell
+curl --location 'http://127.0.0.1:8004/query' --header 'Content-Type: application/json' --data '{
+    "prompt": "Parlami del pattern singleton"
+}'
+```
+
+---
+
+## DELETE  
+### Deleting a document from the database  
+Endpoint: `http://127.0.0.1:8004/document?file_name=***`  
+`***` should be replaced with the name of the file to delete.  
+Example request using curl:  
+```shell
+curl --location --request DELETE 'http://127.0.0.1:8004/document?file_name=***'
+```
+**Tip:** To avoid errors, it is recommended to first retrieve the list of uploaded documents (by making a request to the [/documents](#retrieving-the-list-of-uploaded-documents) endpoint) and copy the name of the file you want to delete.
