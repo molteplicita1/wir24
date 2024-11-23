@@ -62,7 +62,7 @@ Before making requests that involve querying Chroma, you must first populate the
 The requests to **avoid** if no document has been uploaded yet are:  
 - [Query for generation](#query-for-generation)  
 - [Deleting a document from the database](#deleting-a-document-from-the-database)  
-- [Retrieving the list of uploaded documents](#retrieving-the-list-of-uploaded-documents)
+- [Retrieve the list of uploaded documents](#retrieve-the-list-of-uploaded-documents)
 
 The requests that **can** be made regardless are:  
 - [Gateway health check](#gateway-health-check)  
