@@ -1,4 +1,4 @@
-## Description
+# Description
 
 This version of the system implements a microservices architecture, designed for enhanced scalability, modularity, and ease of maintenance. 
 The functionality is divided into four key microservices, each with a specific role:
@@ -8,7 +8,7 @@ The functionality is divided into four key microservices, each with a specific r
 - **Retrieve**: Processes user queries by calculating their embeddings, using them to retrieve the top-k most relevant documents from the vector database.
 - **Generate**: Constructs responses using the context provided by the retrieved documents and the Ollama server running LLMs.
 
-## How to Run
+# How to Run
 
 
 1. **Install Ollama**
